@@ -20,6 +20,8 @@ public class PlayerMoveCtrl : MonoBehaviour
     public bool DirectionFlag = false;
     public float DefaultCurvature = 0.5f;
     public GameObject DebugCc;
+
+    public int debugI;
     
 
     // Start is called before the first frame update
@@ -38,6 +40,8 @@ public class PlayerMoveCtrl : MonoBehaviour
     //Find the next checkpoint in the list and try to reach it (When having a curve, it will go round - WIP)
     public void PathAlong()
     {
+        Debug.Log(debugI);
+        debugI++;
         if (TargetPointIndex == -1 || TargetPathList.Length == 0)
             return;
 
@@ -45,7 +49,6 @@ public class PlayerMoveCtrl : MonoBehaviour
         Transform lastTP = TargetPathList[TargetPointIndex - 1];
         //Rotate Angle
         Vector2 direction = (targetPoint.position - transform.position).normalized;
-
         //If it's a straight line
         if (((targetPoint.position) - lastTP.position).x == 0 || ((targetPoint.position) - lastTP.position).y == 0)
         {
@@ -53,14 +56,17 @@ public class PlayerMoveCtrl : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
             estTime = 0;
         }
-
-        else if (estTime <= 1)
+        
+        else if (estTime <= CurveDuration)
         {
             float crsPro = 0;
-            Debug.Log("Curve" + (TargetPointIndex - 1) + TargetPointIndex);
-            Vector3 position;
-            estTime += Time.deltaTime * CurveDuration;
 
+            estTime += Time.deltaTime;
+            float t = Mathf.Clamp01(estTime / CurveDuration);
+
+            Vector3 position;
+
+            Debug.Log("TimeDebug"+estTime);
             if (DirectionFlag == false)
             {
                 Vector2 fw = transform.right;
@@ -70,16 +76,16 @@ public class PlayerMoveCtrl : MonoBehaviour
 
             if (crsPro > 0)
             {
-                position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
+                position = BezierPoint(t, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
                 //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false);
             }
 
             else
             {
-                position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
+                position = BezierPoint(t, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
                 //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true);
             }
-            DebugCc.transform.position = position;
+            //DebugCc.transform.position = position;
             transform.position = new Vector3(position.x, position.y, transform.position.z);
             //transform.position = Vector3.MoveTowards(transform.position,new Vector3(position.x, position.y, transform.position.z),BasicMoveSpeed * Time.deltaTime);
         }
@@ -91,7 +97,7 @@ public class PlayerMoveCtrl : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPoint.position) < 0.1f)
         {
             TargetPointIndex++;
-
+            estTime = 0;
             if (TargetPointIndex >= TargetPathList.Length)
             {
                 TargetPointIndex = -1; 
@@ -142,6 +148,7 @@ public class PlayerMoveCtrl : MonoBehaviour
 
     Vector2 BezierPoint(float EstT, Vector3 p0, Vector3 p1, Vector3 p2)
     {
-        return (Mathf.Sqrt(1-EstT)*p0)+((2*EstT)*(1-EstT)*p1)+Mathf.Sqrt(EstT)*p2;
+        float u = 1 - EstT;
+        return u * u * p0 + 2 * u * EstT * p1 + EstT * EstT * p2;
     }
 }
