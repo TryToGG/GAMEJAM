@@ -10,6 +10,7 @@ public class PlayerMoveCtrl : MonoBehaviour
     public float RandomHorizontalRange = 1f;
     public float HorizontalMoveSpeed = 1f;
     public float RotationSpeed = 200f;
+    public int RoadType = 0;
     //Checkpoints
     public int TargetPointIndex = 0;
     private float HoriOffset = 0f;
@@ -40,61 +41,61 @@ public class PlayerMoveCtrl : MonoBehaviour
     //Find the next checkpoint in the list and try to reach it (When having a curve, it will go round - WIP)
     public void PathAlong()
     {
-        Debug.Log(debugI);
-        debugI++;
         if (TargetPointIndex == -1 || TargetPathList.Length == 0)
             return;
 
         Transform targetPoint = TargetPathList[TargetPointIndex];
         Transform lastTP = TargetPathList[TargetPointIndex - 1];
+        float crsPro = 0;
+
+        if (DirectionFlag == false)
+        {
+            Vector2 fw = transform.right;
+            Vector2 tTg = targetPoint.position - lastTP.position;
+            crsPro = fw.x * tTg.y - fw.y * tTg.x;
+            DirectionFlag = true;
+        }
+
+        Debug.Log(crsPro);
+
         //Rotate Angle
         Vector2 direction = (targetPoint.position - transform.position).normalized;
+
         //If it's a straight line
-        if (((targetPoint.position) - lastTP.position).x == 0 || ((targetPoint.position) - lastTP.position).y == 0)
+        if (-0.1f <= crsPro && crsPro <= 0.1f && RoadType != 2)
         {
-            Debug.Log("Straight" + (TargetPointIndex - 1) + TargetPointIndex);
+            //Debug.Log("Straight" + (TargetPointIndex - 1) + TargetPointIndex);
             transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
-            estTime = 0;
         }
         
-        else if (estTime <= CurveDuration)
+        else if (estTime <= 1 && RoadType != 1)
         {
-            float crsPro = 0;
 
-            estTime += Time.deltaTime;
-            float t = Mathf.Clamp01(estTime / CurveDuration);
+            estTime += Time.deltaTime * DefaultCurvature;
 
             Vector3 position;
 
-            Debug.Log("TimeDebug"+estTime);
-            if (DirectionFlag == false)
-            {
-                Vector2 fw = transform.right;
-                Vector2 tTg = targetPoint.position - lastTP.position;
-                crsPro = fw.x * tTg.y - fw.y * tTg.x;
-            }
+            //Debug.Log("TimeDebug"+estTime);
+            
 
-            if (crsPro > 0)
+            if (crsPro > 0.1f)
             {
-                position = BezierPoint(t, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
+                position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
                 //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false);
             }
 
             else
             {
-                position = BezierPoint(t, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
+                position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
                 //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true);
             }
-            //DebugCc.transform.position = position;
+            DebugCc.transform.position = position;
             transform.position = new Vector3(position.x, position.y, transform.position.z);
             //transform.position = Vector3.MoveTowards(transform.position,new Vector3(position.x, position.y, transform.position.z),BasicMoveSpeed * Time.deltaTime);
-        }
-        else 
-        {
-            DirectionFlag = false;
+            RoadType = 2;
         }
 
-        if (Vector3.Distance(transform.position, targetPoint.position) < 0.1f)
+        if (Vector3.Distance(transform.position, targetPoint.position) < 0.05f)
         {
             TargetPointIndex++;
             estTime = 0;
@@ -102,6 +103,8 @@ public class PlayerMoveCtrl : MonoBehaviour
             {
                 TargetPointIndex = -1; 
             }
+            DirectionFlag = false;
+            RoadType = 0;
         }
 
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
