@@ -48,10 +48,6 @@ public class PlayerMoveCtrl : MonoBehaviour
         Transform lastTP = TargetPathList[TargetPointIndex - 1];
         float crsPro = 0;
 
-        //Rotate Angle
-        Vector2 direction = (targetPoint.position - transform.position).normalized;
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
-        /*
         if (DirectionFlag == false)
         {
             Vector2 fw = transform.right;
@@ -59,6 +55,11 @@ public class PlayerMoveCtrl : MonoBehaviour
             crsPro = fw.x * tTg.y - fw.y * tTg.x;
             DirectionFlag = true;
         }
+
+        Debug.Log(crsPro);
+
+        //Rotate Angle
+        Vector2 direction = (targetPoint.position - transform.position).normalized;
 
         //If it's a straight line
         if (-0.1f <= crsPro && crsPro <= 0.1f)
@@ -79,20 +80,18 @@ public class PlayerMoveCtrl : MonoBehaviour
                 position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
             }
             transform.position = new Vector3(position.x, position.y, transform.position.z);
-        }*/
+        }
 
         if (Vector3.Distance(transform.position, targetPoint.position) < 0.05f)
         {
             TargetPointIndex++;
+            estTime = 0;
             if (TargetPointIndex >= TargetPathList.Length)
             {
                 TargetPointIndex = -1; 
             }
-            /*
             DirectionFlag = false;
-            estTime = 0;
             RoadType = 0;
-            */
         }
 
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
