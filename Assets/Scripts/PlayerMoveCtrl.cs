@@ -62,37 +62,24 @@ public class PlayerMoveCtrl : MonoBehaviour
         Vector2 direction = (targetPoint.position - transform.position).normalized;
 
         //If it's a straight line
-        if (-0.1f <= crsPro && crsPro <= 0.1f && RoadType != 2)
+        if (-0.1f <= crsPro && crsPro <= 0.1f)
         {
-            //Debug.Log("Straight" + (TargetPointIndex - 1) + TargetPointIndex);
             transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
         }
-        
-        else if (estTime <= 1 && RoadType != 1)
+        //If it's a curve line
+        else if (estTime < 1)
         {
-
             estTime += Time.deltaTime * DefaultCurvature;
-
             Vector3 position;
-
-            //Debug.Log("TimeDebug"+estTime);
-            
-
             if (crsPro > 0.1f)
             {
                 position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
-                //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false);
             }
-
             else
             {
                 position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true), targetPoint.position);
-                //DebugCc.transform.position = CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, true);
             }
-            DebugCc.transform.position = position;
             transform.position = new Vector3(position.x, position.y, transform.position.z);
-            //transform.position = Vector3.MoveTowards(transform.position,new Vector3(position.x, position.y, transform.position.z),BasicMoveSpeed * Time.deltaTime);
-            RoadType = 2;
         }
 
         if (Vector3.Distance(transform.position, targetPoint.position) < 0.05f)
