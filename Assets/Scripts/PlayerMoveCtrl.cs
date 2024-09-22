@@ -6,6 +6,7 @@ public class PlayerMoveCtrl : MonoBehaviour
 {
     //Basic moving data
     public Transform[] TargetPathList;
+    public float MoveSpeed = 1f;
     public float BasicMoveSpeed = 1f;
     public float RandomHorizontalRange = 1f;
     public float HorizontalMoveSpeed = 1f;
@@ -28,6 +29,7 @@ public class PlayerMoveCtrl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        MoveSpeed = BasicMoveSpeed;
         
     }
 
@@ -50,7 +52,7 @@ public class PlayerMoveCtrl : MonoBehaviour
 
         //Rotate Angle
         Vector2 direction = (targetPoint.position - transform.position).normalized;
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, MoveSpeed * Time.deltaTime);
         /*
         if (DirectionFlag == false)
         {
@@ -142,4 +144,6 @@ public class PlayerMoveCtrl : MonoBehaviour
         float u = 1 - EstT;
         return u * u * p0 + 2 * u * EstT * p1 + EstT * EstT * p2;
     }
+
+
 }
