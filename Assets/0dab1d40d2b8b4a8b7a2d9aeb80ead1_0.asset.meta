@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/3b4dc97bfe2ed7e515e8f7f64db4abd_0.asset.meta
+guid: b85a772f57e8cc546b8dfd30f6cdc302
+========
 guid: 02dd3d5402073e94c876cfd45fef3f73
+>>>>>>>> 02037433979d8a9bcbbfaf3ad6f59d8b12449931:Assets/0dab1d40d2b8b4a8b7a2d9aeb80ead1_0.asset.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000
