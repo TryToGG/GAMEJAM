@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class KeyBindScript1 : MonoBehaviour
 {
     private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>(); //saving keybinds and controls ex)move up, W
-    public TextMeshProUGUI up, left, down, right, select, cancel;
+    public TextMeshProUGUI up, left, down, right, cycle, place;
     private GameObject currentkey;
 
     void Start()
@@ -20,15 +20,15 @@ public class KeyBindScript1 : MonoBehaviour
         keys.Add("Left", KeyCode.A);
         keys.Add("Down", KeyCode.S);
         keys.Add("Right", KeyCode.D);
-        keys.Add("Select", KeyCode.Z);
-        keys.Add("Cancel", KeyCode.X);
+        keys.Add("Cycle Prop", KeyCode.Z);
+        keys.Add("Place Prop", KeyCode.X);
 
         up.text = keys["Up"].ToString();
         left.text = keys["Left"].ToString();
         down.text = keys["Down"].ToString();
         right.text = keys["Right"].ToString();
-        select.text = keys["Select"].ToString();
-        cancel.text = keys["Cancel"].ToString();
+        cycle.text = keys["Cycle Prop"].ToString();
+        place.text = keys["Place Prop"].ToString();
     }
 
     private void OnGUI() // sensitively catches key input

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class StartMenu : MonoBehaviour
 {
+    public Animator Menu;
+    public bool menu = false;
     public void SwitchScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
@@ -15,7 +17,8 @@ public class StartMenu : MonoBehaviour
     }
 
     public void OptionPressed()
-    { 
-    
+    {
+        Menu.SetBool("Options",menu);
+        menu = !menu;
     }
 }
