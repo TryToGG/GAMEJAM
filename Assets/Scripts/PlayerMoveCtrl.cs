@@ -38,20 +38,25 @@ public class PlayerMoveCtrl : MonoBehaviour
         RandomHorizontal();
     }
 
-    //Find the next checkpoint in the list and try to reach it (When having a curve, it will go round - WIP)
+    
     public void PathAlong()
     {
+        //Find the next checkpoint in the list and try to reach it (When having a curve, it will go in round - Abandoned)
         if (TargetPointIndex == -1 || TargetPathList.Length == 0)
             return;
 
         Transform targetPoint = TargetPathList[TargetPointIndex];
         Transform lastTP = TargetPathList[TargetPointIndex - 1];
-        float crsPro = 0;
+        //float crsPro = 0;
 
         //Rotate Angle
         Vector2 direction = (targetPoint.position - transform.position).normalized;
         transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
         /*
+        ------------------
+        This is the attempt to achieve rounded turns automatically using Beizier Point, but somehow doesn't work, so I comment it and started working on others
+        ------------------
+        //Judge if the target point is on either L/R sides (or in Front or Back)
         if (DirectionFlag == false)
         {
             Vector2 fw = transform.right;
@@ -60,7 +65,7 @@ public class PlayerMoveCtrl : MonoBehaviour
             DirectionFlag = true;
         }
 
-        //If it's a straight line
+        //If it's a straight line (Decimals are for rounding)
         if (-0.1f <= crsPro && crsPro <= 0.1f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
@@ -70,6 +75,7 @@ public class PlayerMoveCtrl : MonoBehaviour
         {
             estTime += Time.deltaTime * DefaultCurvature;
             Vector3 position;
+            //Generate a path to run in curve
             if (crsPro > 0.1f)
             {
                 position = BezierPoint(estTime, targetPoint.position, CtrlPointCalc(lastTP.position, targetPoint.position, curveCtrlPointOffset, false), targetPoint.position);
@@ -80,7 +86,7 @@ public class PlayerMoveCtrl : MonoBehaviour
             }
             transform.position = new Vector3(position.x, position.y, transform.position.z);
         }*/
-
+        //If nears the target point, cycles to the next one.
         if (Vector3.Distance(transform.position, targetPoint.position) < 0.05f)
         {
             TargetPointIndex++;
@@ -88,18 +94,18 @@ public class PlayerMoveCtrl : MonoBehaviour
             {
                 TargetPointIndex = -1; 
             }
-            /*
+            /* Beizier Point Reset
             DirectionFlag = false;
             estTime = 0;
             RoadType = 0;
             */
         }
-
+        //Make sure the object is always facing front
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, targetAngle));
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
     }
-
+    //For debugging use
     void RandomHorizontal()
     {
         if (Input.GetKey(KeyCode.A))
@@ -112,6 +118,8 @@ public class PlayerMoveCtrl : MonoBehaviour
         }
     }
 
+    /*
+    //Calculate the Control Point for Bezier line
     Vector3 CtrlPointCalc(Vector3 start, Vector3 end, float hOffset, bool ifRight)
     {
         Vector2 direction = (end - start).normalized;
@@ -125,7 +133,7 @@ public class PlayerMoveCtrl : MonoBehaviour
         {
             return midPoint + normal * - DefaultCurvature;
         }
-        /*
+        
         Vector3 midPoint = (start + end) / 2;
         if (ifRight)
         {
@@ -134,12 +142,14 @@ public class PlayerMoveCtrl : MonoBehaviour
         else
         {
             return new Vector3(midPoint.x - hOffset, midPoint.y);
-        }*/
+        }
     }
 
+    //Bezier line formula
     Vector2 BezierPoint(float EstT, Vector3 p0, Vector3 p1, Vector3 p2)
     {
         float u = 1 - EstT;
         return u * u * p0 + 2 * u * EstT * p1 + EstT * EstT * p2;
     }
+    */
 }
