@@ -10,15 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-<<<<<<<< HEAD:Assets/3b4dc97bfe2ed7e515e8f7f64db4abd_10.asset
-  m_Name: 3b4dc97bfe2ed7e515e8f7f64db4abd_10
-  m_EditorClassIdentifier: 
-  m_Sprite: {fileID: -916688837, guid: b2a318b6307c2d34881232e5ef4c77c5, type: 3}
-========
   m_Name: 0dab1d40d2b8b4a8b7a2d9aeb80ead1_10
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 1830426311, guid: 0a35f656ac52b404dbaee59edd5441f8, type: 3}
->>>>>>>> 02037433979d8a9bcbbfaf3ad6f59d8b12449931:Assets/0dab1d40d2b8b4a8b7a2d9aeb80ead1_10.asset
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
