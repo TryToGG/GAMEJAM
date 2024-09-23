@@ -7,9 +7,15 @@ public class StartMenu : MonoBehaviour
 {
     public Animator Menu;
     public bool menu = false;
-    public void SwitchScene(string sceneName)
+    public void StartGame()
     {
-        SceneManager.LoadScene(sceneName);
+        StartCoroutine(Animate());
+    }
+    public IEnumerator Animate()
+    {
+        Menu.SetBool("GameStart",true);
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene("GamePlayScene");
     }
     public void ExitGame()
     {

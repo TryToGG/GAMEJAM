@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class KeyBindScript1 : MonoBehaviour
 {
+    public static KeyBindScript1 instance;
+
     private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>(); //saving keybinds and controls ex)move up, W
     public TextMeshProUGUI up, left, down, right, cycle, place;
     private GameObject currentkey;
@@ -51,6 +54,18 @@ public class KeyBindScript1 : MonoBehaviour
 
     }
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else 
+        {
+            Destroy(gameObject);
+        }
+    }
     //I tried to save this keys next time, but it somehow didn't worked properly, and got afraid of crashing the default key inputs, so I'll just comment it
     //public void SaveKeys()
     //{

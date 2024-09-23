@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class KeyBindScript2 : MonoBehaviour
 {
+    public static KeyBindScript2 instance;
+
     private Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>(); //saving keybinds and controls ex)move up, W
     public TextMeshProUGUI up, left, down, right, cycle, place;
     private GameObject currentkey;
@@ -46,7 +49,18 @@ public class KeyBindScript2 : MonoBehaviour
         currentkey = clicked; //currentkey is something like "Up" (Button's name)
 
     }
-
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     //public void SaveKeys()
     //{
     //    foreach(var key in keys) //referring dictionary keys

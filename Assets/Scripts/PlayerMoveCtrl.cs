@@ -1,41 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMoveCtrl : MonoBehaviour
 {
     //Basic moving data
     public Transform[] TargetPathList;
+    public float MoveSpeed = 1f;
     public float BasicMoveSpeed = 1f;
-    public float RandomHorizontalRange = 1f;
+
+    public Vector3 RandomTgCord;
+    public float RandomHorizontalRange = 4.5f;
+    public float RandomHoriStep = 0.1f;
     public float HorizontalMoveSpeed = 1f;
+    public float snailMovingIntervalMin = 1f;
+    public float snailMovingIntervalMax = 2f;
+    public GameObject snailCharacter;
+
+    public bool rpFlag = true;
+    
     public float RotationSpeed = 200f;
-    public int RoadType = 0;
+    //public int RoadType = 0;
     //Checkpoints
     public int TargetPointIndex = 0;
-    private float HoriOffset = 0f;
     //Curve turn system
-    private float estTime = 0;
-    public float curveCtrlPointOffset = 1f;
-    public float CurveDuration = 3f;
-    public bool DirectionFlag = false;
-    public float DefaultCurvature = 0.5f;
-    public GameObject DebugCc;
+    //private float estTime = 0;
+    //public float curveCtrlPointOffset = 1f;
+    //public float CurveDuration = 3f;
+    //public bool DirectionFlag = false;
+    //public float DefaultCurvature = 0.5f;
+    //public GameObject DebugCc;
 
-    public int debugI;
+    //public int debugI;
     
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        MoveSpeed = BasicMoveSpeed;
+        StartCoroutine(RandomHorizontal());
     }
 
     // Update is called once per frame
     void Update()
     {
         PathAlong();
-        RandomHorizontal();
+        //StartCoroutine(RandomHorizontal());
     }
 
     
@@ -43,7 +54,10 @@ public class PlayerMoveCtrl : MonoBehaviour
     {
         //Find the next checkpoint in the list and try to reach it (When having a curve, it will go in round - Abandoned)
         if (TargetPointIndex == -1 || TargetPathList.Length == 0)
+        {
+            rpFlag = false;
             return;
+        }
 
         Transform targetPoint = TargetPathList[TargetPointIndex];
         Transform lastTP = TargetPathList[TargetPointIndex - 1];
@@ -51,7 +65,7 @@ public class PlayerMoveCtrl : MonoBehaviour
 
         //Rotate Angle
         Vector2 direction = (targetPoint.position - transform.position).normalized;
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, BasicMoveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, MoveSpeed * Time.deltaTime);
         /*
         ------------------
         This is the attempt to achieve rounded turns automatically using Beizier Point, but somehow doesn't work, so I comment it and started working on others
@@ -104,17 +118,16 @@ public class PlayerMoveCtrl : MonoBehaviour
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, targetAngle));
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, RotationSpeed * Time.deltaTime);
+
+        snailCharacter.transform.localPosition = Vector3.MoveTowards(snailCharacter.transform.localPosition, RandomTgCord, Time.deltaTime * HorizontalMoveSpeed);
     }
-    //For debugging use
-    void RandomHorizontal()
+    IEnumerator RandomHorizontal()
     {
-        if (Input.GetKey(KeyCode.A))
+        while(rpFlag)
         {
-            HoriOffset += HorizontalMoveSpeed * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            HoriOffset -= HorizontalMoveSpeed * Time.deltaTime;
+            RandomTgCord = new Vector3(0, Random.Range(-RandomHorizontalRange, +RandomHorizontalRange), 0);
+            RandomTgCord = new Vector3(RandomTgCord.x, RandomTgCord.y - (RandomTgCord.y % RandomHoriStep), RandomTgCord.z);
+            yield return new WaitForSeconds(Random.Range(snailMovingIntervalMin, snailMovingIntervalMax));
         }
     }
 
